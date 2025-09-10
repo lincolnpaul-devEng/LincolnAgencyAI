@@ -168,13 +168,45 @@ class AgentOrchestrator:
                     task_data.get("target_audience", ""),
                     task_data.get("chapter_count", 7)
                 )
+            elif task_type == "generate_template" and "product_factory" in self.agents:
+                return await self.agents["product_factory"].generate_template(
+                    task_data.get("template_type", ""),
+                    task_data.get("industry", "")
+                )
             elif task_type == "create_social_content" and "content_agent" in self.agents:
                 return await self.agents["content_agent"].create_social_content(
                     task_data.get("platform", ""),
                     task_data.get("topic", ""),
                     task_data.get("brand_voice", "professional")
                 )
-            # Add more task types as needed
+            elif task_type == "create_video_script" and "content_agent" in self.agents:
+                return await self.agents["content_agent"].create_video_script(
+                    task_data.get("video_type", ""),
+                    task_data.get("duration", 2),
+                    task_data.get("topic", "")
+                )
+            elif task_type == "personalize_email" and "outreach_agent" in self.agents:
+                return await self.agents["outreach_agent"].personalize_email(
+                    task_data.get("recipient_info", {}),
+                    task_data.get("email_template", ""),
+                    task_data.get("campaign_goal", "")
+                )
+            elif task_type == "generate_code_project" and "code_writer" in self.agents:
+                return await self.agents["code_writer"].generate_code_project(
+                    task_data.get("project_spec", {}),
+                    task_data.get("language", "python")
+                )
+            elif task_type == "review_code" and "code_reviewer" in self.agents:
+                return await self.agents["code_reviewer"].review_code(
+                    task_data.get("code_content", ""),
+                    task_data.get("language", "python"),
+                    task_data.get("review_criteria")
+                )
+            elif task_type == "assemble_deliverable" and "fulfillment_agent" in self.agents:
+                return await self.agents["fulfillment_agent"].assemble_deliverable(
+                    task_data.get("project_requirements", {}),
+                    task_data.get("agent_outputs", [])
+                )
             else:
                 raise ValueError(f"Unknown task type: {task_type}")
                 

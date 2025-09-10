@@ -259,10 +259,16 @@
         function createAgentCard(agentKey, agentData) {
             const card = document.createElement('div');
             card.className = 'agent-card';
+            card.style.cursor = 'pointer';
             
             const agentName = agentData.name || agentKey.replace('_', ' ').toUpperCase();
             const description = agentDescriptions[agentKey] || 'Specialized AI agent for business automation';
             const status = agentData.status || 'unknown';
+            
+            // Add click event to navigate to agent page
+            card.addEventListener('click', () => {
+                window.location.href = `/agent/${agentKey}`;
+            });
             
             card.innerHTML = `
                 <div class="agent-header">
@@ -279,6 +285,9 @@
                         <span class="metric-value">${new Date(agentData.last_active || Date.now()).toLocaleTimeString()}</span>
                         <span class="metric-label">Last Active</span>
                     </div>
+                </div>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.9rem; color: #7f8c8d; text-align: center;">
+                    Click to access agent interface →
                 </div>
             `;
             

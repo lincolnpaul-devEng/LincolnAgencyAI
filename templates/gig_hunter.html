@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gig Hunter Agent - LINCOLN AGENCY</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-btn:hover { transform: scale(1.05); }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-right: 1rem;
+        }
+        
+        .btn:hover { transform: scale(1.05); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .results {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .results h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        
+        .opportunity-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .opportunity-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .status-hunting { background: #f39c12; color: white; }
+        .status-idle { background: #95a5a6; color: white; }
+        .status-working { background: #27ae60; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Gig Hunter Agent</h1>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="agent-card">
+            <h2>Agent Status: <span class="status-indicator" id="agentStatus">Loading...</span></h2>
+            <p>The Gig Hunter agent searches for freelance opportunities on platforms like Fiverr and Gumroad, then generates tailored proposals.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                <div>
+                    <h3>🔍 Hunt for Gigs</h3>
+                    <p>Automatically search for opportunities on Fiverr and Gumroad</p>
+                    <button class="btn" onclick="huntGigs()" id="huntBtn">Start Hunting</button>
+                </div>
+                
+                <div>
+                    <h3>📝 Generate Custom Proposal</h3>
+                    <div class="form-group">
+                        <label for="jobDescription">Job Description:</label>
+                        <textarea id="jobDescription" placeholder="Enter the job description or project requirements..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientName">Client Name (optional):</label>
+                        <input type="text" id="clientName" placeholder="Client or company name">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientInfo">Additional Client Info (optional):</label>
+                        <textarea id="clientInfo" placeholder="Industry, company size, specific requirements..."></textarea>
+                    </div>
+                    <button class="btn" onclick="generateProposal()" id="proposalBtn">Generate Proposal</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results" class="results" style="display: none;">
+            <h3>Results</h3>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentStatus = 'idle';
+
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (data.agents && data.agents.gig_hunter) {
+                    currentStatus = data.agents.gig_hunter.status;
+                    updateStatusIndicator(currentStatus);
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        function updateStatusIndicator(status) {
+            const statusEl = document.getElementById('agentStatus');
+            statusEl.textContent = status;
+            statusEl.className = `status-indicator status-${status}`;
+        }
+
+        async function huntGigs() {
+            const huntBtn = document.getElementById('huntBtn');
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            huntBtn.disabled = true;
+            huntBtn.textContent = 'Hunting...';
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">🔍 Hunting for gigs on Fiverr and Gumroad...</div>';
+            
+            try {
+                const response = await fetch('/api/hunt-gigs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultsContent.innerHTML = `
+                        <h4>🎯 Gig Hunt Complete!</h4>
+                        <p><strong>Opportunities Found:</strong> ${data.opportunities_found}</p>
+                        ${data.opportunities.map(opp => `
+                            <div class="opportunity-card">
+                                <div class="opportunity-title">${opp.title}</div>
+                                <p><strong>Platform:</strong> ${opp.platform}</p>
+                                <p><strong>Description:</strong> ${opp.description}</p>
+                                <p><strong>Estimated Value:</strong> ${opp.client_info?.estimated_value || 'Not specified'}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            } finally {
+                huntBtn.disabled = false;
+                huntBtn.textContent = 'Start Hunting';
+            }
+        }
+
+        async function generateProposal() {
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientInfo = document.getElementById('clientInfo').value.trim();
+            const proposalBtn = document.getElementById('proposalBtn');
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            if (!jobDescription) {
+                alert('Please enter a job description');
+                return;
+            }
+            
+            proposalBtn.disabled = true;
+            proposalBtn.textContent = 'Generating...';
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">✍️ Generating tailored proposal...</div>';
+            
+            try {
+                const clientInfoObj = clientName || clientInfo ? {
+                    name: clientName,
+                    info: clientInfo
+                } : null;
+
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'generate_proposal',
+                        job_description: jobDescription,
+                        client_info: clientInfoObj
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const proposal = data.result;
+                    resultsContent.innerHTML = `
+                        <h4>📝 Generated Proposal</h4>
+                        <div class="opportunity-card">
+                            <div class="opportunity-title">${proposal.title || 'Professional Proposal'}</div>
+                            <p><strong>Introduction:</strong></p>
+                            <p>${proposal.introduction || 'Not available'}</p>
+                            <p><strong>Approach:</strong></p>
+                            <p>${proposal.approach || 'Not available'}</p>
+                            <p><strong>Timeline:</strong></p>
+                            <p>${proposal.timeline || 'Not available'}</p>
+                            <p><strong>Pricing Notes:</strong></p>
+                            <p>${proposal.pricing_notes || 'Not available'}</p>
+                            <p><strong>Closing:</strong></p>
+                            <p>${proposal.closing || 'Not available'}</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to generate proposal'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            } finally {
+                proposalBtn.disabled = false;
+                proposalBtn.textContent = 'Generate Proposal';
+            }
+        }
+
+        // Check status on load and periodically
+        checkStatus();
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+</html>

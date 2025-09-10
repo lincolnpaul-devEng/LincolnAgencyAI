@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Agent - LINCOLN AGENCY</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 { color: #2c3e50; font-size: 2rem; }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem;
+            border-radius: 25px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: transform 0.3s ease;
+        }
+        
+        .back-btn:hover { transform: scale(1.05); }
+        
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px;
+            padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        
+        .form-group label {
+            display: block; margin-bottom: 0.5rem;
+            font-weight: 600; color: #2c3e50;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.8rem; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 1rem;
+        }
+        
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem;
+            border-radius: 25px; font-weight: 600; cursor: pointer;
+            transition: transform 0.3s ease; margin-right: 1rem;
+        }
+        
+        .btn:hover { transform: scale(1.05); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .results {
+            background: #f8f9fa; border-radius: 8px; padding: 1.5rem;
+            margin-top: 2rem; border-left: 4px solid #667eea;
+        }
+        
+        .results h3 { color: #2c3e50; margin-bottom: 1rem; }
+        
+        .loading { text-align: center; padding: 2rem; color: #7f8c8d; }
+        
+        .content-card {
+            background: white; border-radius: 8px; padding: 1.5rem;
+            margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .platform-tabs {
+            display: flex; gap: 1rem; margin-bottom: 2rem;
+            border-bottom: 1px solid #eee; padding-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.5rem; border-radius: 25px;
+            background: #f8f9fa; cursor: pointer; transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 Content Agent</h1>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="agent-card">
+            <h2>Social Media Content & Script Creator</h2>
+            <p>Generate engaging content for various platforms and create video scripts.</p>
+            
+            <div class="platform-tabs">
+                <div class="tab active" onclick="switchTab('social')">Social Media Content</div>
+                <div class="tab" onclick="switchTab('video')">Video Scripts</div>
+            </div>
+            
+            <div id="socialTab">
+                <h3>🚀 Create Social Media Content</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="platform">Platform:</label>
+                            <select id="platform">
+                                <option value="twitter">Twitter</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="tiktok">TikTok</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="socialTopic">Content Topic:</label>
+                            <input type="text" id="socialTopic" placeholder="e.g., AI in business, productivity tips...">
+                        </div>
+                        <div class="form-group">
+                            <label for="brandVoice">Brand Voice:</label>
+                            <select id="brandVoice">
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual</option>
+                                <option value="humorous">Humorous</option>
+                                <option value="inspirational">Inspirational</option>
+                                <option value="educational">Educational</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="createSocialContent()">Generate Content</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>Platform Guidelines:</h4>
+                        <ul id="platformGuidelines">
+                            <li>Twitter: 280 characters max, use hashtags</li>
+                            <li>Focus on engagement and brevity</li>
+                            <li>Include relevant hashtags</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="videoTab" style="display: none;">
+                <h3>🎬 Create Video Scripts</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="videoType">Video Type:</label>
+                            <select id="videoType">
+                                <option value="explainer">Explainer Video</option>
+                                <option value="tutorial">Tutorial</option>
+                                <option value="promotional">Promotional</option>
+                                <option value="testimonial">Testimonial</option>
+                                <option value="social_media">Social Media Video</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="videoDuration">Duration (minutes):</label>
+                            <input type="number" id="videoDuration" min="1" max="60" value="2" placeholder="Duration in minutes">
+                        </div>
+                        <div class="form-group">
+                            <label for="videoTopic">Video Topic:</label>
+                            <textarea id="videoTopic" placeholder="Describe what the video should be about..."></textarea>
+                        </div>
+                        <button class="btn" onclick="createVideoScript()">Generate Script</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>Script Elements:</h4>
+                        <ul>
+                            <li>Strong opening hook</li>
+                            <li>Clear structure with sections</li>
+                            <li>Visual direction notes</li>
+                            <li>Engaging transitions</li>
+                            <li>Compelling call-to-action</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results" class="results" style="display: none;">
+            <h3>Generated Content</h3>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const platformGuidelines = {
+            twitter: ['280 characters max', 'Use relevant hashtags', 'Focus on engagement', 'Include visuals when possible'],
+            linkedin: ['Professional tone', 'Up to 1300 characters', 'Industry-relevant hashtags', 'Encourage discussion'],
+            instagram: ['Visual-first content', 'Up to 2200 characters', 'Use trending hashtags', 'Story-driven'],
+            facebook: ['Conversational tone', 'Up to 500 characters', 'Encourage sharing', 'Community-focused'],
+            tiktok: ['Trendy and fun', 'Short and snappy', 'Use popular hashtags', 'Call for engagement']
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('socialTab').style.display = tab === 'social' ? 'block' : 'none';
+            document.getElementById('videoTab').style.display = tab === 'video' ? 'block' : 'none';
+            event.target.classList.add('active');
+        }
+
+        document.getElementById('platform').addEventListener('change', function() {
+            const platform = this.value;
+            const guidelines = platformGuidelines[platform] || [];
+            document.getElementById('platformGuidelines').innerHTML = 
+                guidelines.map(g => `<li>${g}</li>`).join('');
+        });
+
+        async function createSocialContent() {
+            const platform = document.getElementById('platform').value;
+            const topic = document.getElementById('socialTopic').value.trim();
+            const brandVoice = document.getElementById('brandVoice').value;
+            
+            if (!topic) {
+                alert('Please enter a content topic');
+                return;
+            }
+
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">🎨 Creating social media content...</div>';
+            
+            try {
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'create_social_content',
+                        platform: platform,
+                        topic: topic,
+                        brand_voice: brandVoice
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const content = data.result;
+                    resultsContent.innerHTML = `
+                        <div class="content-card">
+                            <h4>📱 ${platform.charAt(0).toUpperCase() + platform.slice(1)} Content</h4>
+                            <div style="background: white; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                <strong>Content:</strong><br>
+                                ${content.content || 'No content generated'}
+                            </div>
+                            ${content.hashtags ? `<p><strong>Hashtags:</strong> ${content.hashtags}</p>` : ''}
+                            ${content.engagement_tips ? `<p><strong>Engagement Tips:</strong> ${content.engagement_tips}</p>` : ''}
+                            ${content.best_posting_time ? `<p><strong>Best Posting Time:</strong> ${content.best_posting_time}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to create content'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function createVideoScript() {
+            const videoType = document.getElementById('videoType').value;
+            const duration = parseInt(document.getElementById('videoDuration').value);
+            const topic = document.getElementById('videoTopic').value.trim();
+            
+            if (!topic) {
+                alert('Please enter a video topic');
+                return;
+            }
+
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">🎬 Creating video script...</div>';
+            
+            try {
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'create_video_script',
+                        video_type: videoType,
+                        duration: duration,
+                        topic: topic
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const script = data.result;
+                    resultsContent.innerHTML = `
+                        <div class="content-card">
+                            <h4>🎬 ${videoType.replace('_', ' ').toUpperCase()} Script</h4>
+                            <p><strong>Title:</strong> ${script.title || 'Video Script'}</p>
+                            <p><strong>Duration:</strong> ${script.total_duration || duration + ' minutes'}</p>
+                            
+                            ${script.hook ? `
+                                <div style="background: #fff3cd; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <strong>🎣 Hook:</strong><br>${script.hook}
+                                </div>
+                            ` : ''}
+                            
+                            ${script.sections ? script.sections.map((section, i) => `
+                                <div style="background: white; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <strong>Section ${i + 1}:</strong><br>
+                                    <strong>Content:</strong> ${section.content || 'No content'}<br>
+                                    ${section.visuals ? `<strong>Visuals:</strong> ${section.visuals}<br>` : ''}
+                                    ${section.timing ? `<strong>Timing:</strong> ${section.timing}` : ''}
+                                </div>
+                            `).join('') : ''}
+                            
+                            ${script.cta ? `
+                                <div style="background: #d1ecf1; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                                    <strong>📢 Call-to-Action:</strong><br>${script.cta}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to create script'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

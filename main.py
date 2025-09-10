@@ -75,6 +75,28 @@ async def dashboard(request: Request):
     """Main dashboard page"""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.get("/agent/{agent_name}", response_class=HTMLResponse)
+async def agent_page(request: Request, agent_name: str):
+    """Individual agent pages"""
+    agent_templates = {
+        "gig_hunter": "gig_hunter.html",
+        "product_factory": "product_factory.html", 
+        "content_agent": "content_agent.html",
+        "outreach_agent": "outreach_agent.html",
+        "fulfillment_agent": "fulfillment_agent.html",
+        "code_writer": "code_writer.html",
+        "code_reviewer": "code_reviewer.html"
+    }
+    
+    template_name = agent_templates.get(agent_name)
+    if not template_name:
+        return JSONResponse(
+            content={"error": f"Agent '{agent_name}' not found"},
+            status_code=404
+        )
+    
+    return templates.TemplateResponse(template_name, {"request": request, "agent_name": agent_name})
+
 @app.get("/api/status")
 async def get_system_status():
     """Get current system and agent status"""
@@ -110,6 +132,33 @@ async def execute_task(task_data: dict):
         logger.error(f"Error executing task: {str(e)}")
         return JSONResponse(
             content={"error": f"Failed to execute task: {str(e)}"},
+            status_code=500
+        )
+
+@app.post("/api/hunt-gigs")
+async def trigger_gig_hunt():
+    """Manually trigger gig hunting for testing"""
+    try:
+        if "gig_hunter" not in orchestrator.agents:
+            return JSONResponse(
+                content={"error": "Gig Hunter agent not available"},
+                status_code=503
+            )
+        
+        agent = orchestrator.agents["gig_hunter"]
+        opportunities = await agent.hunt_for_gigs()
+        
+        return JSONResponse(content={
+            "success": True, 
+            "message": f"Gig hunt completed successfully",
+            "opportunities_found": len(opportunities),
+            "opportunities": opportunities[:3]  # Return first 3 for preview
+        })
+        
+    except Exception as e:
+        logger.error(f"Error triggering gig hunt: {str(e)}")
+        return JSONResponse(
+            content={"error": f"Failed to trigger gig hunt: {str(e)}"},
             status_code=500
         )
 

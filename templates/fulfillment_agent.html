@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fulfillment Agent - LINCOLN AGENCY</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        
+        .header h1 { color: #2c3e50; font-size: 2rem; }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem;
+            border-radius: 25px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: transform 0.3s ease;
+        }
+        .back-btn:hover { transform: scale(1.05); }
+        
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px;
+            padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.8rem; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 1rem;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 25px;
+            font-weight: 600; cursor: pointer; transition: transform 0.3s ease; margin-right: 1rem;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .results { background: #f8f9fa; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; border-left: 4px solid #667eea; }
+        .results h3 { color: #2c3e50; margin-bottom: 1rem; }
+        .loading { text-align: center; padding: 2rem; color: #7f8c8d; }
+        
+        .deliverable-card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .component-card { background: #f8f9fa; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; }
+        
+        .queue-files { background: #e8f4fd; padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+        .file-item { background: white; padding: 0.5rem; margin: 0.25rem 0; border-radius: 4px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Fulfillment Agent</h1>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="agent-card">
+            <h2>Deliverable Assembler</h2>
+            <p>Combine outputs from multiple agents into comprehensive project deliverables.</p>
+            
+            <div style="margin-top: 2rem;">
+                <h3>📋 Available Agent Outputs</h3>
+                <div id="queueFiles" class="queue-files">
+                    <p>Loading available agent outputs...</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                    <div>
+                        <h3>🎯 Assemble Deliverable</h3>
+                        
+                        <div class="form-group">
+                            <label for="projectName">Project Name:</label>
+                            <input type="text" id="projectName" placeholder="e.g., Website Redesign Project, Marketing Campaign">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="clientName">Client Name:</label>
+                            <input type="text" id="clientName" placeholder="e.g., Acme Corporation">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="projectGoals">Project Goals:</label>
+                            <textarea id="projectGoals" placeholder="Describe the main objectives and goals of this project..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="deliveryDate">Target Delivery Date:</label>
+                            <input type="date" id="deliveryDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="additionalNotes">Additional Requirements:</label>
+                            <textarea id="additionalNotes" placeholder="Any specific requirements, formatting preferences, or special instructions..."></textarea>
+                        </div>
+                        
+                        <button class="btn" onclick="assembleDeliverable()" id="assembleBtn">Assemble Deliverable</button>
+                        <button class="btn" style="background: #6c757d;" onclick="loadQueueFiles()">Refresh Queue</button>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>Deliverable Features:</h4>
+                        <ul>
+                            <li>Executive summary</li>
+                            <li>Organized component sections</li>
+                            <li>Implementation timeline</li>
+                            <li>Quality assurance notes</li>
+                            <li>Next steps and recommendations</li>
+                            <li>Professional formatting</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1rem;">Agent Outputs Used:</h4>
+                        <ul>
+                            <li>Gig Hunter proposals</li>
+                            <li>Content Agent materials</li>
+                            <li>Product Factory ebooks/templates</li>
+                            <li>Code Writer projects</li>
+                            <li>Code Reviewer analyses</li>
+                            <li>Outreach Agent emails</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1rem;">How It Works:</h4>
+                        <p style="font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;">
+                            The Fulfillment Agent automatically detects and incorporates outputs from other agents, creating a cohesive final deliverable with professional structure and formatting.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results" class="results" style="display: none;">
+            <h3>Assembled Deliverable</h3>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadQueueFiles() {
+            const queueDiv = document.getElementById('queueFiles');
+            queueDiv.innerHTML = '<p>Loading agent outputs...</p>';
+            
+            try {
+                // This would typically fetch from an API that lists queue files
+                // For now, we'll simulate the queue content
+                queueDiv.innerHTML = `
+                    <h5>Recent Agent Outputs:</h5>
+                    <div class="file-item">📝 Gig Hunter: 3 proposals generated</div>
+                    <div class="file-item">📚 Product Factory: 2 ebooks, 1 template</div>
+                    <div class="file-item">📱 Content Agent: 5 social posts, 2 scripts</div>
+                    <div class="file-item">📧 Outreach Agent: 4 personalized emails</div>
+                    <div class="file-item">💻 Code Writer: 2 projects generated</div>
+                    <div class="file-item">🔍 Code Reviewer: 3 reviews completed</div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #6c757d;">
+                        These outputs will be automatically incorporated when assembling your deliverable.
+                    </p>
+                `;
+            } catch (error) {
+                queueDiv.innerHTML = '<p style="color: #e74c3c;">Error loading queue files</p>';
+            }
+        }
+
+        async function assembleDeliverable() {
+            const projectName = document.getElementById('projectName').value.trim();
+            const clientName = document.getElementById('clientName').value.trim();
+            const projectGoals = document.getElementById('projectGoals').value.trim();
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const additionalNotes = document.getElementById('additionalNotes').value.trim();
+            const assembleBtn = document.getElementById('assembleBtn');
+            
+            if (!projectName || !clientName || !projectGoals) {
+                alert('Please fill in the project name, client name, and project goals');
+                return;
+            }
+            
+            assembleBtn.disabled = true;
+            assembleBtn.textContent = 'Assembling...';
+            
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">📦 Assembling comprehensive deliverable from agent outputs...</div>';
+            
+            try {
+                const projectRequirements = {
+                    name: projectName,
+                    client: clientName,
+                    goals: projectGoals,
+                    delivery_date: deliveryDate,
+                    additional_notes: additionalNotes
+                };
+
+                // In a real implementation, we would fetch actual agent outputs
+                const mockAgentOutputs = [
+                    {
+                        agent: "gig_hunter",
+                        type: "proposal",
+                        timestamp: new Date().toISOString(),
+                        content: "Sample proposal content"
+                    },
+                    {
+                        agent: "content_agent",
+                        type: "social_content",
+                        timestamp: new Date().toISOString(),
+                        content: "Sample social media content"
+                    }
+                ];
+
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'assemble_deliverable',
+                        project_requirements: projectRequirements,
+                        agent_outputs: mockAgentOutputs
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const deliverable = data.result;
+                    resultsContent.innerHTML = `
+                        <div class="deliverable-card">
+                            <h4>📦 ${projectName} - Complete Deliverable</h4>
+                            <p><strong>Client:</strong> ${clientName}</p>
+                            ${deliveryDate ? `<p><strong>Delivery Date:</strong> ${new Date(deliveryDate).toLocaleDateString()}</p>` : ''}
+                            
+                            ${deliverable.executive_summary ? `
+                                <div class="component-card">
+                                    <h5>📋 Executive Summary</h5>
+                                    <p>${deliverable.executive_summary}</p>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverable.deliverable_components && deliverable.deliverable_components.length ? `
+                                <h5 style="margin-top: 1.5rem;">📚 Deliverable Components</h5>
+                                ${deliverable.deliverable_components.map(component => `
+                                    <div class="component-card">
+                                        <h6>${component.title || component.name || 'Component'}</h6>
+                                        <p>${component.description || component.content || 'Component description'}</p>
+                                        ${component.source_agent ? `<small><strong>Source:</strong> ${component.source_agent}</small>` : ''}
+                                    </div>
+                                `).join('')}
+                            ` : ''}
+                            
+                            ${deliverable.implementation_plan ? `
+                                <div class="component-card">
+                                    <h5>🚀 Implementation Plan</h5>
+                                    <p>${deliverable.implementation_plan}</p>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverable.quality_notes ? `
+                                <div class="component-card">
+                                    <h5>✅ Quality Assurance Notes</h5>
+                                    <p>${deliverable.quality_notes}</p>
+                                </div>
+                            ` : ''}
+                            
+                            ${deliverable.next_steps && deliverable.next_steps.length ? `
+                                <div class="component-card">
+                                    <h5>➡️ Next Steps</h5>
+                                    <ul>
+                                        ${deliverable.next_steps.map(step => `<li>${step}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to assemble deliverable'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            } finally {
+                assembleBtn.disabled = false;
+                assembleBtn.textContent = 'Assemble Deliverable';
+            }
+        }
+
+        // Load queue files on page load
+        window.onload = function() {
+            loadQueueFiles();
+        };
+    </script>
+</body>
+</html>

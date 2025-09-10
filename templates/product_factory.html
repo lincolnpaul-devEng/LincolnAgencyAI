@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Factory Agent - LINCOLN AGENCY</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        
+        .header h1 { color: #2c3e50; font-size: 2rem; }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem;
+            border-radius: 25px; font-weight: 600; cursor: pointer;
+            text-decoration: none; transition: transform 0.3s ease;
+        }
+        .back-btn:hover { transform: scale(1.05); }
+        
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px;
+            padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.8rem; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 1rem;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 25px;
+            font-weight: 600; cursor: pointer; transition: transform 0.3s ease; margin-right: 1rem;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .results { background: #f8f9fa; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; border-left: 4px solid #667eea; }
+        .results h3 { color: #2c3e50; margin-bottom: 1rem; }
+        .loading { text-align: center; padding: 2rem; color: #7f8c8d; }
+        
+        .product-card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+        .tab { padding: 0.8rem 1.5rem; border-radius: 25px; background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        
+        .chapter { background: #f8f9fa; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; }
+        .chapter-title { font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 Product Factory Agent</h1>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="agent-card">
+            <h2>Digital Product Creator</h2>
+            <p>Generate comprehensive ebooks and professional templates automatically.</p>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('ebook')">📚 Generate Ebook</div>
+                <div class="tab" onclick="switchTab('template')">📄 Create Template</div>
+            </div>
+            
+            <div id="ebookTab">
+                <h3>📚 Create Professional Ebook</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="ebookTopic">Ebook Topic:</label>
+                            <input type="text" id="ebookTopic" placeholder="e.g., Digital Marketing for Small Business">
+                        </div>
+                        <div class="form-group">
+                            <label for="targetAudience">Target Audience:</label>
+                            <input type="text" id="targetAudience" placeholder="e.g., Small business owners, Marketing professionals">
+                        </div>
+                        <div class="form-group">
+                            <label for="chapterCount">Number of Chapters:</label>
+                            <select id="chapterCount">
+                                <option value="5">5 Chapters</option>
+                                <option value="7" selected>7 Chapters</option>
+                                <option value="10">10 Chapters</option>
+                                <option value="12">12 Chapters</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="generateEbook()" id="ebookBtn">Generate Ebook</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>Ebook Features:</h4>
+                        <ul>
+                            <li>Professional structure with chapters</li>
+                            <li>Comprehensive content (800-1200 words per chapter)</li>
+                            <li>Learning objectives for each chapter</li>
+                            <li>Practical examples and exercises</li>
+                            <li>Ready for publication</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="templateTab" style="display: none;">
+                <h3>📄 Generate Business Template</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <div class="form-group">
+                            <label for="templateType">Template Type:</label>
+                            <select id="templateType">
+                                <option value="contract">Business Contract</option>
+                                <option value="proposal">Project Proposal</option>
+                                <option value="invoice">Invoice Template</option>
+                                <option value="business_plan">Business Plan</option>
+                                <option value="marketing_plan">Marketing Plan</option>
+                                <option value="sop">Standard Operating Procedure</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="industry">Industry/Sector:</label>
+                            <input type="text" id="industry" placeholder="e.g., Technology, Healthcare, Consulting">
+                        </div>
+                        <div class="form-group">
+                            <label for="templateNotes">Additional Requirements:</label>
+                            <textarea id="templateNotes" placeholder="Any specific requirements or sections to include..."></textarea>
+                        </div>
+                        <button class="btn" onclick="generateTemplate()" id="templateBtn">Create Template</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>Template Features:</h4>
+                        <ul>
+                            <li>Industry-specific language</li>
+                            <li>Professional formatting</li>
+                            <li>Placeholder fields for customization</li>
+                            <li>Legal compliance considerations</li>
+                            <li>Ready-to-use format</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results" class="results" style="display: none;">
+            <h3>Generated Product</h3>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('ebookTab').style.display = tab === 'ebook' ? 'block' : 'none';
+            document.getElementById('templateTab').style.display = tab === 'template' ? 'block' : 'none';
+            event.target.classList.add('active');
+        }
+
+        async function generateEbook() {
+            const topic = document.getElementById('ebookTopic').value.trim();
+            const audience = document.getElementById('targetAudience').value.trim();
+            const chapters = parseInt(document.getElementById('chapterCount').value);
+            const ebookBtn = document.getElementById('ebookBtn');
+            
+            if (!topic || !audience) {
+                alert('Please fill in the topic and target audience');
+                return;
+            }
+            
+            ebookBtn.disabled = true;
+            ebookBtn.textContent = 'Generating...';
+            
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">📚 Creating comprehensive ebook... This may take a few minutes.</div>';
+            
+            try {
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'generate_ebook',
+                        topic: topic,
+                        target_audience: audience,
+                        chapter_count: chapters
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const ebook = data.result;
+                    resultsContent.innerHTML = `
+                        <div class="product-card">
+                            <h4>📚 ${ebook.title || topic}</h4>
+                            <p><strong>Target Audience:</strong> ${ebook.target_audience || audience}</p>
+                            <p><strong>Description:</strong> ${ebook.description || 'Professional ebook'}</p>
+                            
+                            <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">Table of Contents:</h5>
+                            ${ebook.chapters ? ebook.chapters.map((chapter, i) => `
+                                <div class="chapter">
+                                    <div class="chapter-title">Chapter ${i + 1}: ${chapter.title || `Chapter ${i + 1}`}</div>
+                                    ${chapter.key_points ? `<p><strong>Key Points:</strong> ${chapter.key_points.join ? chapter.key_points.join(', ') : chapter.key_points}</p>` : ''}
+                                </div>
+                            `).join('') : ''}
+                            
+                            ${ebook.chapters_content ? `
+                                <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">Full Content:</h5>
+                                ${ebook.chapters_content.map(chapter => `
+                                    <div class="chapter">
+                                        <div class="chapter-title">${chapter.title}</div>
+                                        <div style="white-space: pre-line; margin-top: 0.5rem;">${chapter.content}</div>
+                                    </div>
+                                `).join('')}
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to generate ebook'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            } finally {
+                ebookBtn.disabled = false;
+                ebookBtn.textContent = 'Generate Ebook';
+            }
+        }
+
+        async function generateTemplate() {
+            const templateType = document.getElementById('templateType').value;
+            const industry = document.getElementById('industry').value.trim();
+            const notes = document.getElementById('templateNotes').value.trim();
+            const templateBtn = document.getElementById('templateBtn');
+            
+            if (!industry) {
+                alert('Please specify the industry/sector');
+                return;
+            }
+            
+            templateBtn.disabled = true;
+            templateBtn.textContent = 'Creating...';
+            
+            const resultsEl = document.getElementById('results');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsEl.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading">📄 Creating professional template...</div>';
+            
+            try {
+                const response = await fetch('/api/execute-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_type: 'generate_template',
+                        template_type: templateType,
+                        industry: industry,
+                        notes: notes
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.result) {
+                    const template = data.result;
+                    resultsContent.innerHTML = `
+                        <div class="product-card">
+                            <h4>📄 ${template.title || templateType.replace('_', ' ').toUpperCase()}</h4>
+                            <p><strong>Industry:</strong> ${industry}</p>
+                            <p><strong>Description:</strong> ${template.description || 'Professional template'}</p>
+                            
+                            ${template.sections ? `
+                                <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">Template Sections:</h5>
+                                ${template.sections.map(section => `
+                                    <div class="chapter">
+                                        <div class="chapter-title">${section.title || section.name || 'Section'}</div>
+                                        <div style="margin-top: 0.5rem;">${section.content || section.description || ''}</div>
+                                    </div>
+                                `).join('')}
+                            ` : ''}
+                            
+                            ${template.placeholders ? `
+                                <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">Customizable Fields:</h5>
+                                <div class="chapter">
+                                    ${template.placeholders.map(field => `<span style="background: #667eea; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; margin: 0.2rem; display: inline-block;">[${field}]</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${data.error || 'Failed to generate template'}</div>`;
+                }
+            } catch (error) {
+                resultsContent.innerHTML = `<div style="color: #e74c3c;">Error: ${error.message}</div>`;
+            } finally {
+                templateBtn.disabled = false;
+                templateBtn.textContent = 'Create Template';
+            }
+        }
+    </script>
+</body>
+</html>
