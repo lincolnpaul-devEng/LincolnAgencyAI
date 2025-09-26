@@ -9,18 +9,16 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import os
-from openai import OpenAI
-
-# the newest OpenAI model is "gpt-5" which was released August 7, 2025.
-# do not change this unless explicitly requested by the user
+from .gemini_adapter import AIClient
+from .email_notifier import send_task_email
 
 class CodeWriterAgent:
     def __init__(self):
         self.name = "CodeWriter"
         self.status = "idle"
         self.logger = self._setup_logging()
-        self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        
+        self.client = AIClient()
+
     def _setup_logging(self):
         logger = logging.getLogger(self.name)
         logger.setLevel(logging.INFO)
@@ -57,15 +55,15 @@ class CodeWriterAgent:
             """
             
             response = await asyncio.to_thread(
-                self.openai_client.chat.completions.create,
-                model="gpt-5",
+                self.client.client.chat.completions.create,  # Fixed client reference
+                model="gpt-4o-mini",  # Using available model
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
             )
             
             content_text = response.choices[0].message.content
             if not content_text:
-                raise ValueError("No code project content received from OpenAI")
+                raise ValueError("No code project content received from AI")
             code_project = json.loads(content_text)
             
             output_data = {
@@ -80,8 +78,16 @@ class CodeWriterAgent:
             await self._save_to_queue(output_data)
             self.logger.info("Code project generated successfully")
             self.status = "idle"
+
+            # 📧 Send email after task completion
+            send_task_email(
+                self.name,
+                f"Generated {language} project: {project_spec.get('name', 'Unnamed')}",
+                json.dumps(code_project, indent=2)
+            )
+
             return code_project
-            
+
         except Exception as e:
             self.logger.error(f"Error generating code project: {str(e)}")
             self.status = "error"

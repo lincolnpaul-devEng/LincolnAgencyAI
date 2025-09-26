@@ -9,18 +9,16 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import os
-from openai import OpenAI
-
-# the newest OpenAI model is "gpt-5" which was released August 7, 2025.
-# do not change this unless explicitly requested by the user
+from .email_notifier import send_task_email
+from .gemini_adapter import AIClient
 
 class CodeReviewerAgent:
     def __init__(self):
         self.name = "CodeReviewer"
         self.status = "idle"
         self.logger = self._setup_logging()
-        self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        
+        self.client = AIClient()
+
     def _setup_logging(self):
         logger = logging.getLogger(self.name)
         logger.setLevel(logging.INFO)
@@ -73,16 +71,17 @@ class CodeReviewerAgent:
             Format as JSON with: overall_score, issues (array), security_concerns, performance_suggestions, improvements, testing_recommendations
             """
             
+            # Use the correct client instance
             response = await asyncio.to_thread(
-                self.openai_client.chat.completions.create,
-                model="gpt-5",
+                self.client.client.chat.completions.create,  # Fixed client reference
+                model="gpt-4o-mini",  # Using available model
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
             )
             
             content_text = response.choices[0].message.content
             if not content_text:
-                raise ValueError("No code review content received from OpenAI")
+                raise ValueError("No code review content received from AI")
             review_result = json.loads(content_text)
             
             output_data = {
@@ -97,8 +96,16 @@ class CodeReviewerAgent:
             await self._save_to_queue(output_data)
             self.logger.info("Code review completed successfully")
             self.status = "idle"
+
+            # 📧 Send email after task completion
+            send_task_email(
+                self.name,
+                f"Reviewed {language} code",
+                json.dumps(review_result, indent=2)
+            )
+
             return review_result
-            
+
         except Exception as e:
             self.logger.error(f"Error reviewing code: {str(e)}")
             self.status = "error"

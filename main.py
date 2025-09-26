@@ -11,9 +11,11 @@ import asyncio
 import logging
 import os
 from pathlib import Path
+import sys
 import uvicorn
 from dotenv import load_dotenv
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Import the orchestrator
 from orchestrator import orchestrator
 

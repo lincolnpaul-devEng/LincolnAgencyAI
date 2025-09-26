@@ -9,7 +9,10 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import os
-from openai import OpenAI
+from .gemini_adapter import AIClient
+from .email_notifier import send_task_email
+
+
 
 # the newest OpenAI model is "gpt-5" which was released August 7, 2025.
 # do not change this unless explicitly requested by the user
@@ -19,7 +22,8 @@ class OutreachAgent:
         self.name = "OutreachAgent"
         self.status = "idle"
         self.logger = self._setup_logging()
-        self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        self.client = AIClient()
+
         
     def _setup_logging(self):
         logger = logging.getLogger(self.name)
@@ -59,7 +63,7 @@ class OutreachAgent:
             """
             
             response = await asyncio.to_thread(
-                self.openai_client.chat.completions.create,
+                self.client.client.chat.completions.create,
                 model="gpt-5",
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
@@ -82,6 +86,14 @@ class OutreachAgent:
             await self._save_to_queue(output_data)
             self.logger.info("Email personalized successfully")
             self.status = "idle"
+
+            
+             # 📧 Send email after task completion
+            send_task_email(
+                self.name,
+                f"Personalized email for {recipient_info.get('name', 'Unnamed')}",
+                json.dumps(personalized_email, indent=2)
+            )
             return personalized_email
             
         except Exception as e:

@@ -9,7 +9,10 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import os
-from openai import OpenAI
+from .gemini_adapter import AIClient
+from .email_notifier import send_task_email
+
+
 
 # the newest OpenAI model is "gpt-5" which was released August 7, 2025.
 # do not change this unless explicitly requested by the user
@@ -19,7 +22,8 @@ class ProductFactoryAgent:
         self.name = "ProductFactory"
         self.status = "idle"
         self.logger = self._setup_logging()
-        self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        self.client = AIClient()
+
         
     def _setup_logging(self):
         logger = logging.getLogger(self.name)
@@ -110,6 +114,14 @@ class ProductFactoryAgent:
             await self._save_to_queue(output_data)
             self.logger.info("Ebook generated successfully")
             self.status = "idle"
+
+            # 📧 Send email after task completion
+            send_task_email(
+                self.name,
+                f"Generated ebook project: {topic}",
+                json.dumps(full_ebook, indent=2)
+            )
+
             return full_ebook
             
         except Exception as e:
@@ -137,7 +149,7 @@ class ProductFactoryAgent:
             """
             
             response = await asyncio.to_thread(
-                self.openai_client.chat.completions.create,
+                self.client.client.chat.completions.create,
                 model="gpt-5",
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
@@ -160,6 +172,14 @@ class ProductFactoryAgent:
             await self._save_to_queue(output_data)
             self.logger.info("Template generated successfully")
             self.status = "idle"
+
+            # 📧 Send email after task completion
+            send_task_email(
+                self.name,
+                f"Generated {template_type} template for {industry}",
+                json.dumps(template, indent=2)
+            )
+
             return template
             
         except Exception as e:
